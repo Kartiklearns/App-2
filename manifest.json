@@ -1,6 +1,6 @@
 {
-  "name": "GymTracker — Progressive Overload",
-  "short_name": "GymTracker",
+  "name": "Gymify — Progressive Overload",
+  "short_name": "Gymify",
   "description": "Track workouts, log sets & reps, visualize progressive overload week over week.",
   "start_url": "/",
   "display": "standalone",

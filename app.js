@@ -1,5 +1,5 @@
 // =====================================================
-// GymTracker — app.js
+// Gymify — app.js
 // Full SPA: Dashboard | Routines | Workout | Progress | History
 // Data: LocalStorage | Charts: Chart.js | Audio: Web Audio API
 // =====================================================

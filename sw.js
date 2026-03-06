@@ -1,5 +1,5 @@
-// GymTracker Service Worker — Cache-first strategy
-const CACHE_NAME = 'gymtracker-v1';
+// Gymify Service Worker — Cache-first strategy
+const CACHE_NAME = 'gymify-v1';
 const ASSETS = [
   '/',
   '/index.html',
