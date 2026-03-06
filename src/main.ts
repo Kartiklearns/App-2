@@ -19,7 +19,7 @@ function init(): void {
 
   // Register service worker
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/App-2/sw.js')
+    navigator.serviceWorker.register('/sw.js')
       .catch(err => console.warn('[SW] failed:', err));
   }
 }
