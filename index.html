@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GymTracker — Progressive Overload</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- Rest Timer Overlay -->
+  <div id="rest-timer-overlay" class="hidden">
+    <div class="rest-timer-card">
+      <div class="rest-timer-label">REST TIMER</div>
+      <div id="rest-timer-display">1:30</div>
+      <div class="rest-timer-controls">
+        <button id="rest-skip-btn" class="btn btn-ghost">Skip</button>
+        <button id="rest-restart-btn" class="btn btn-secondary">Restart</button>
+      </div>
+      <select id="rest-duration-select">
+        <option value="30">30 sec</option>
+        <option value="60">1 min</option>
+        <option value="90" selected>1:30</option>
+        <option value="120">2 min</option>
+        <option value="180">3 min</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- App Shell -->
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">GymTracker</span>
+      </div>
+      <div class="header-streak" id="header-streak"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content">
+      <!-- Dashboard View -->
+      <section id="view-dashboard" class="view active">
+        <div class="view-header">
+          <h1>Dashboard</h1>
+          <div id="current-date" class="subtitle"></div>
+        </div>
+        <div class="stats-grid" id="dashboard-stats"></div>
+        <div class="quick-actions">
+          <button id="quick-start-btn" class="btn btn-primary btn-large">
+            <span>▶</span> Start Workout
+          </button>
+        </div>
+        <div class="section-title">Recent Workouts</div>
+        <div id="recent-workouts" class="recent-list"></div>
+      </section>
+
+      <!-- Routines View -->
+      <section id="view-routines" class="view">
+        <div class="view-header">
+          <h1>Routines</h1>
+          <button id="create-routine-btn" class="btn btn-primary btn-sm">+ New Routine</button>
+        </div>
+        <div id="routines-list"></div>
+      </section>
+
+      <!-- Active Workout View -->
+      <section id="view-workout" class="view">
+        <div class="view-header">
+          <h1 id="workout-title">Active Workout</h1>
+          <div class="workout-header-actions">
+            <div id="workout-timer-display" class="workout-timer">00:00</div>
+            <button id="finish-workout-btn" class="btn btn-success btn-sm">Finish</button>
+            <button id="cancel-workout-btn" class="btn btn-danger btn-sm">Cancel</button>
+          </div>
+        </div>
+        <div id="workout-exercises"></div>
+        <div id="workout-empty" class="empty-state hidden">
+          <p>No routine selected. Go to Routines to start a workout.</p>
+        </div>
+      </section>
+
+      <!-- Progress View -->
+      <section id="view-progress" class="view">
+        <div class="view-header">
+          <h1>Progress</h1>
+        </div>
+        <div class="progress-filters">
+          <select id="progress-exercise-select">
+            <option value="">Select Exercise</option>
+          </select>
+          <select id="progress-metric-select">
+            <option value="maxWeight">Max Weight</option>
+            <option value="volume">Weekly Volume</option>
+          </select>
+        </div>
+        <div id="progress-summary" class="progress-summary hidden"></div>
+        <div class="chart-container">
+          <canvas id="progress-chart"></canvas>
+        </div>
+        <div class="section-title" style="margin-top:2rem">Progressive Overload — Week over Week</div>
+        <div class="progress-filters">
+          <select id="overload-exercise-select">
+            <option value="">Select Exercise</option>
+          </select>
+        </div>
+        <div class="chart-container">
+          <canvas id="overload-chart"></canvas>
+        </div>
+      </section>
+
+      <!-- History View -->
+      <section id="view-history" class="view">
+        <div class="view-header">
+          <h1>History</h1>
+        </div>
+        <div id="history-list" class="history-list"></div>
+      </section>
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-view="dashboard">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </button>
+      <button class="nav-btn" data-view="routines">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">Routines</span>
+      </button>
+      <button class="nav-btn" data-view="workout">
+        <span class="nav-icon">💪</span>
+        <span class="nav-label">Workout</span>
+      </button>
+      <button class="nav-btn" data-view="progress">
+        <span class="nav-icon">📈</span>
+        <span class="nav-label">Progress</span>
+      </button>
+      <button class="nav-btn" data-view="history">
+        <span class="nav-icon">📅</span>
+        <span class="nav-label">History</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Modals -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <!-- Routine Creator Modal -->
+    <div id="modal-routine" class="modal hidden">
+      <div class="modal-header">
+        <h2 id="modal-routine-title">Create Routine</h2>
+        <button class="modal-close" data-modal="modal-routine">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="routine-name-input" class="input" placeholder="Routine name (e.g. Push Day)" />
+        <div class="section-title" style="margin-top:1rem">Select Exercises</div>
+        <div class="muscle-group-tabs" id="muscle-tabs"></div>
+        <div id="exercise-selector" class="exercise-selector"></div>
+        <div class="section-title" style="margin-top:1rem">Selected Exercises</div>
+        <div id="selected-exercises-list" class="selected-list"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-modal="modal-routine">Cancel</button>
+        <button id="save-routine-btn" class="btn btn-primary">Save Routine</button>
+      </div>
+    </div>
+
+    <!-- Select Routine Modal (for quick start) -->
+    <div id="modal-select-routine" class="modal hidden">
+      <div class="modal-header">
+        <h2>Select Routine</h2>
+        <button class="modal-close" data-modal="modal-select-routine">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="select-routine-list"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-modal="modal-select-routine">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
