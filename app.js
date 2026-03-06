@@ -982,7 +982,10 @@ function initEvents() {
 function init() {
   seedExercises();
   initEvents();
-  navigateTo('dashboard');
+  // Handle PWA shortcut URLs (?view=workout etc.)
+  const params = new URLSearchParams(window.location.search);
+  const viewParam = params.get('view');
+  navigateTo(viewParam && VIEWS.includes(viewParam) ? viewParam : 'dashboard');
 }
 
 document.addEventListener('DOMContentLoaded', init);
