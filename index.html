@@ -13,108 +13,118 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Gymify" />
   <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="description" content="Track workouts, log sets & reps, and crush progressive overload." />
 
-  <!-- SEO / Social -->
-  <meta name="description" content="Track workouts, log sets & reps, and visualize progressive overload." />
-
-  <link rel="stylesheet" href="style.css" />
+  <!-- Chart.js (external, cached by SW) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <!-- Rest Timer Overlay -->
+
+  <!-- ===== Rest Timer Overlay ===== -->
   <div id="rest-timer-overlay" class="hidden">
     <div class="rest-timer-card">
-      <div class="rest-timer-label">REST TIMER</div>
-      <div id="rest-timer-display">1:30</div>
+      <div class="rest-timer-label">REST</div>
+      <div id="rest-timer-display" class="rest-timer-digits">1:30</div>
+      <div class="rest-timer-bar-wrap">
+        <div id="rest-timer-bar" class="rest-timer-bar"></div>
+      </div>
       <div class="rest-timer-controls">
         <button id="rest-skip-btn" class="btn btn-ghost">Skip</button>
-        <button id="rest-restart-btn" class="btn btn-secondary">Restart</button>
+        <button id="rest-restart-btn" class="btn btn-secondary">↺ Restart</button>
       </div>
-      <select id="rest-duration-select">
+      <select id="rest-duration-select" class="input" style="margin-top:.75rem">
         <option value="30">30 sec</option>
         <option value="60">1 min</option>
-        <option value="90" selected>1:30</option>
+        <option value="90" selected>1 min 30</option>
         <option value="120">2 min</option>
         <option value="180">3 min</option>
       </select>
     </div>
   </div>
 
-  <!-- App Shell -->
+  <!-- ===== App Shell ===== -->
   <div id="app">
+
     <!-- Header -->
     <header class="app-header">
       <div class="header-logo">
-        <span class="logo-icon">⚡</span>
+        <img src="logo.png" alt="Gymify" class="logo-img" />
         <span class="logo-text">Gymify</span>
       </div>
-      <div class="header-streak" id="header-streak"></div>
+      <div id="header-streak" class="header-streak"></div>
     </header>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <main id="main-content">
-      <!-- Dashboard View -->
+
+      <!-- Dashboard -->
       <section id="view-dashboard" class="view active">
         <div class="view-header">
-          <h1>Dashboard</h1>
-          <div id="current-date" class="subtitle"></div>
+          <div>
+            <h1>Dashboard</h1>
+            <div id="current-date" class="subtitle"></div>
+          </div>
         </div>
-        <div class="stats-grid" id="dashboard-stats"></div>
+        <div id="dashboard-stats" class="stats-grid"></div>
         <div class="quick-actions">
           <button id="quick-start-btn" class="btn btn-primary btn-large">
-            <span>▶</span> Start Workout
+            <span class="btn-icon-lg">▶</span> Start Workout
           </button>
         </div>
         <div class="section-title">Recent Workouts</div>
         <div id="recent-workouts" class="recent-list"></div>
       </section>
 
-      <!-- Routines View -->
+      <!-- Routines -->
       <section id="view-routines" class="view">
         <div class="view-header">
           <h1>Routines</h1>
-          <button id="create-routine-btn" class="btn btn-primary btn-sm">+ New Routine</button>
+          <button id="create-routine-btn" class="btn btn-primary btn-sm">+ New</button>
         </div>
         <div id="routines-list"></div>
       </section>
 
-      <!-- Active Workout View -->
+      <!-- Workout -->
       <section id="view-workout" class="view">
         <div class="view-header">
           <h1 id="workout-title">Active Workout</h1>
           <div class="workout-header-actions">
             <div id="workout-timer-display" class="workout-timer">00:00</div>
-            <button id="finish-workout-btn" class="btn btn-success btn-sm">Finish</button>
-            <button id="cancel-workout-btn" class="btn btn-danger btn-sm">Cancel</button>
+            <button id="finish-workout-btn" class="btn btn-success btn-sm">Done</button>
+            <button id="cancel-workout-btn" class="btn btn-ghost btn-sm">✕</button>
           </div>
         </div>
         <div id="workout-exercises"></div>
         <div id="workout-empty" class="empty-state hidden">
-          <p>No routine selected. Go to Routines to start a workout.</p>
+          <div class="empty-icon">💪</div>
+          <p>No routine selected.<br>Go to <strong>Routines</strong> to start a workout.</p>
         </div>
       </section>
 
-      <!-- Progress View -->
+      <!-- Progress -->
       <section id="view-progress" class="view">
-        <div class="view-header">
-          <h1>Progress</h1>
-        </div>
+        <div class="view-header"><h1>Progress</h1></div>
+
         <div class="progress-filters">
-          <select id="progress-exercise-select">
+          <select id="progress-exercise-select" class="input">
             <option value="">Select Exercise</option>
           </select>
-          <select id="progress-metric-select">
+          <select id="progress-metric-select" class="input">
             <option value="maxWeight">Max Weight</option>
-            <option value="volume">Weekly Volume</option>
+            <option value="volume">Volume</option>
           </select>
         </div>
         <div id="progress-summary" class="progress-summary hidden"></div>
         <div class="chart-container">
           <canvas id="progress-chart"></canvas>
         </div>
-        <div class="section-title" style="margin-top:2rem">Progressive Overload — Week over Week</div>
+
+        <div class="section-title" style="margin-top:1.75rem">Week-over-Week Overload</div>
         <div class="progress-filters">
-          <select id="overload-exercise-select">
+          <select id="overload-exercise-select" class="input">
             <option value="">Select Exercise</option>
           </select>
         </div>
@@ -123,13 +133,12 @@
         </div>
       </section>
 
-      <!-- History View -->
+      <!-- History -->
       <section id="view-history" class="view">
-        <div class="view-header">
-          <h1>History</h1>
-        </div>
+        <div class="view-header"><h1>History</h1></div>
         <div id="history-list" class="history-list"></div>
       </section>
+
     </main>
 
     <!-- Bottom Nav -->
@@ -142,9 +151,8 @@
         <span class="nav-icon">📋</span>
         <span class="nav-label">Routines</span>
       </button>
-      <button class="nav-btn" data-view="workout">
-        <span class="nav-icon">💪</span>
-        <span class="nav-label">Workout</span>
+      <button class="nav-btn nav-btn-center" data-view="workout">
+        <span class="nav-icon-center">💪</span>
       </button>
       <button class="nav-btn" data-view="progress">
         <span class="nav-icon">📈</span>
@@ -155,11 +163,13 @@
         <span class="nav-label">History</span>
       </button>
     </nav>
-  </div>
 
-  <!-- Modals -->
+  </div><!-- #app -->
+
+  <!-- ===== Modals ===== -->
   <div id="modal-overlay" class="modal-overlay hidden">
-    <!-- Routine Creator Modal -->
+
+    <!-- Create / Edit Routine -->
     <div id="modal-routine" class="modal hidden">
       <div class="modal-header">
         <h2 id="modal-routine-title">Create Routine</h2>
@@ -167,10 +177,10 @@
       </div>
       <div class="modal-body">
         <input type="text" id="routine-name-input" class="input" placeholder="Routine name (e.g. Push Day)" />
-        <div class="section-title" style="margin-top:1rem">Select Exercises</div>
-        <div class="muscle-group-tabs" id="muscle-tabs"></div>
+        <div class="section-title" style="margin-top:1.25rem">Exercises by Muscle</div>
+        <div id="muscle-tabs" class="muscle-group-tabs"></div>
         <div id="exercise-selector" class="exercise-selector"></div>
-        <div class="section-title" style="margin-top:1rem">Selected Exercises</div>
+        <div class="section-title" style="margin-top:1rem">Selected</div>
         <div id="selected-exercises-list" class="selected-list"></div>
       </div>
       <div class="modal-footer">
@@ -179,7 +189,7 @@
       </div>
     </div>
 
-    <!-- Select Routine Modal (for quick start) -->
+    <!-- Select Routine -->
     <div id="modal-select-routine" class="modal hidden">
       <div class="modal-header">
         <h2>Select Routine</h2>
@@ -192,17 +202,9 @@
         <button class="btn btn-ghost" data-modal="modal-select-routine">Cancel</button>
       </div>
     </div>
+
   </div>
 
-  <script src="app.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('[SW] Registered:', reg.scope))
-          .catch(err => console.warn('[SW] Registration failed:', err));
-      });
-    }
-  </script>
+  <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

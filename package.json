@@ -1,0 +1,20 @@
+{
+  "name": "gymify",
+  "version": "1.0.0",
+  "description": "Track workouts, progressive overload, and visualize gains.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kartiklearns/App-2.git"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}
